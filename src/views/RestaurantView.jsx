@@ -9,14 +9,19 @@ import SearchField from "../components/SearchField/SearchField.jsx";
 const RestaurantView = () => {
   const [dishes, setDishes] = useState([]);
 
+  const [filter, setFilter] = useState('');
+
+
   // useDebouncedCallback takes a function as a parameter and as the second parameter
   // the number of milliseconds it should wait until it is actually called so a user
   // can type freely and as long as they are typing a letter quicker than 500ms, the function won't fire yet.
   // This is to optimize user experience and communication with the server
   const debouncedEffectHook = useDebouncedCallback(() => {
     let currentEffect = true;
+    console.log(`https://www.themealdb.com/api/json/v1/1/search.php?s=${filter}`)
+
     fetch(
-      `https://www.themealdb.com/api/json/v1/1/search.php?s=`
+      `https://www.themealdb.com/api/json/v1/1/search.php?s=${filter}`
     ).then(res => {
       if (!res.ok) {
         return { meals: null };
@@ -49,14 +54,14 @@ const RestaurantView = () => {
 
   // useEffect can take a variable that is a function and does not need to be defined as an anonymous () => {} arrow function
   // This is especially important when using more controlled techniques like debouncing
-  useEffect(debouncedEffectHook, [debouncedEffectHook]);
+  useEffect(debouncedEffectHook, [debouncedEffectHook, filter]);
 
   return (
     <>
       <NavBar>
         <h1>ReDI React Restaurant</h1>
 
-        <SearchField />
+        <SearchField filter={filter} setFilter={setFilter} />
       </NavBar>
 
       <div className={styles.restaurantWrapper}>
