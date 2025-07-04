@@ -5,6 +5,7 @@ import MenuItem from "../components/MenuItem/MenuItem.jsx";
 import styles from "./RestaurantView.module.css";
 import NavBar from "../components/NavBar/NavBar.jsx";
 import SearchField from "../components/SearchField/SearchField.jsx";
+import MenuList from "../components/MenuLIst/MenuList.jsx";
 
 const RestaurantView = () => {
   const [dishes, setDishes] = useState([]);
@@ -17,6 +18,28 @@ const RestaurantView = () => {
   // I then added the filter to the useEffect dependency so that it fetches new data from the API everytime the filter value changes.
   const [filter, setFilter] = useState('');
 
+  // This controls the toggle to show/hide wishlisted dishes.
+  const [isWishListShown, setIsWishlistShown] = useState(false);
+
+  // This is where we store the wishlisted dishes.
+  const [wishlist, setWishlist] = useState([]);
+
+  // Function to add or remove a dish from the wishlist triggered by the heart icon
+  const handleToggleWishlist = (dish) => {
+    // If the dish exists in the wishlist array then remove.
+    if (isOnWishlist(dish.idMeal)) {
+      setWishlist(wishlist.filter(d => d.idMeal !== dish.idMeal));
+      // If it doesn't, then add.
+    } else {
+      setWishlist([...wishlist, dish]);
+    }
+  };
+
+  // Function to check if the dish exists in the wishlist. 
+  // I made it into a function because I will also use this to change the heart icon to solid heart icon if it's in the wishlist.
+  const isOnWishlist = (id) => {
+    return wishlist.some((w) => w.idMeal === id) ?? false;
+  }
 
   // useDebouncedCallback takes a function as a parameter and as the second parameter
   // the number of milliseconds it should wait until it is actually called so a user
@@ -66,22 +89,14 @@ const RestaurantView = () => {
         <h1>ReDI React Restaurant</h1>
 
         <SearchField filter={filter} setFilter={setFilter} />
+        {/* The toggle button */}
+        <button onClick={() => setIsWishlistShown(!isWishListShown)} >{isWishListShown ? "Hide" : "Show"} Wishlist</button>
       </NavBar>
 
-      <div className={styles.restaurantWrapper}>
-        <div className={styles.menu}>
-          {dishes.length > 0 ? (
-            dishes.map((dish) => (
-              <MenuItem
-                dish={dish}
-                key={dish.idMeal}
-              />
-            ))
-          ) : (
-            <p>No dishes found :(</p>
-          )}
-        </div>
-      </div>
+      {/* Made this part into a component so it looks cleaner and easier for me to read. 
+       For simplicity, I made use of the existing list of dishes to show the wishlist just by changing passed data (dishes or wishlist). */}
+      <MenuList dishes={isWishListShown ? wishlist : dishes} isOnWishlist={isOnWishlist} handleToggleWishlist={handleToggleWishlist} />
+
     </>
   );
 };
