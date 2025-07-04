@@ -9,6 +9,12 @@ import SearchField from "../components/SearchField/SearchField.jsx";
 const RestaurantView = () => {
   const [dishes, setDishes] = useState([]);
 
+  // I added a filter state variable here to be used as props for the SearchField component. 
+  // I then bound the value and onChange of the input box inside the Searchfield component 
+  // with the filter and setFilter, respectively. 
+  // This will then hold the user input which then I concatenated at the end of the fetch function to make use of 
+  // the API's search/filter functionality.
+  // I then added the filter to the useEffect dependency so that it fetches new data from the API everytime the filter value changes.
   const [filter, setFilter] = useState('');
 
 
@@ -18,8 +24,6 @@ const RestaurantView = () => {
   // This is to optimize user experience and communication with the server
   const debouncedEffectHook = useDebouncedCallback(() => {
     let currentEffect = true;
-    console.log(`https://www.themealdb.com/api/json/v1/1/search.php?s=${filter}`)
-
     fetch(
       `https://www.themealdb.com/api/json/v1/1/search.php?s=${filter}`
     ).then(res => {
